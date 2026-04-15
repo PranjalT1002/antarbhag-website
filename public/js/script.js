@@ -63,9 +63,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const preloader = document.getElementById('preloader');
     const siteHeader = document.querySelector('.main-header') || document.querySelector('header');
     
-    // Session management: clear localStorage on every page load for the intro
-    // so users can see the video each fresh session (use sessionStorage instead)
+    // Session management: use sessionStorage so intro plays once per session
     const hasSeenIntro = sessionStorage.getItem('antarbhag_intro_seen');
+    let introFinished = false; // Guard against double-finish
 
     // Only lock scrolling if there's a preloader or intro
     if (preloader || introContainer) {
@@ -91,38 +91,76 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    const attemptPlay = () => {
+        if (!introVideo || introFinished) return;
+        
+        const playPromise = introVideo.play();
+        if (playPromise !== undefined) {
+            playPromise.then(() => {
+                console.log('Intro video playing successfully');
+            }).catch(e => {
+                console.warn('Autoplay blocked:', e);
+                // Retry once after a short delay (some browsers need user gesture detection time)
+                setTimeout(() => {
+                    if (introFinished) return;
+                    const retryPromise = introVideo.play();
+                    if (retryPromise !== undefined) {
+                        retryPromise.catch(() => {
+                            console.warn('Retry failed, skipping intro');
+                            finishIntro();
+                        });
+                    }
+                }, 500);
+            });
+        }
+    };
+
     const startIntroVideo = () => {
-        if (introContainer && introVideo && !hasSeenIntro) {
-            // Ensure video is visible and plays
+        if (introContainer && introVideo && !hasSeenIntro && !introFinished) {
+            // Ensure video is visible
             introContainer.style.display = 'flex';
             introContainer.style.opacity = '1';
             
-            // Attempt to play video
-            const playPromise = introVideo.play();
-            if (playPromise !== undefined) {
-                playPromise.then(() => {
-                    // Playing successfully
-                }).catch(e => {
-                    console.warn('Autoplay blocked:', e);
-                    finishIntro(); // Fallback if play fails
-                });
-            }
-            
+            // Set up event handlers
             introVideo.onended = finishIntro;
             if (skipBtn) skipBtn.onclick = finishIntro;
             
-            // Safety timeout: if video doesn't play within 8 seconds, skip
+            // Listen for errors on the video element
+            introVideo.onerror = (e) => {
+                console.warn('Video error:', e);
+                finishIntro();
+            };
+
+            // Check if video is already ready to play
+            if (introVideo.readyState >= 3) {
+                // HAVE_FUTURE_DATA or HAVE_ENOUGH_DATA - ready to play
+                attemptPlay();
+            } else {
+                // Wait for the video to be ready
+                introVideo.addEventListener('canplay', () => {
+                    attemptPlay();
+                }, { once: true });
+                
+                // Also try loading explicitly
+                introVideo.load();
+            }
+            
+            // Safety timeout: skip intro if video hasn't finished in 45 seconds
             setTimeout(() => {
-                if (introContainer.style.display !== 'none') {
+                if (!introFinished) {
+                    console.warn('Intro video safety timeout reached');
                     finishIntro();
                 }
-            }, 30000); // 30 second max for the video
+            }, 45000);
         } else {
             finishIntro();
         }
     };
 
     const finishIntro = () => {
+        if (introFinished) return; // Prevent double execution
+        introFinished = true;
+        
         if (introContainer) {
             introContainer.style.opacity = '0';
             sessionStorage.setItem('antarbhag_intro_seen', 'true');
