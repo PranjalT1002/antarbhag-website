@@ -2,28 +2,29 @@
 
 :root {
     /* Brand Palette */
-    --primary: #000000;
-    --accent: #e63946;
-    --accent-glow: rgba(230, 57, 70, 0.3);
+    --primary: #0f172a;
+    --accent: #e11d48;
+    --accent-glow: rgba(225, 29, 72, 0.4);
 
     /* Surface Colors */
-    --bg-color: #ffffff;
-    --surface-color: #f8f9fa;
-    --glass-bg: rgba(255, 255, 255, 0.7);
-    --glass-border: rgba(255, 255, 255, 0.2);
+    --bg-color: #f8fafc;
+    --surface-color: rgba(255, 255, 255, 0.85);
+    --glass-bg: rgba(255, 255, 255, 0.75);
+    --glass-border: rgba(255, 255, 255, 0.4);
 
     /* Text Colors */
-    --text-main: #1a1a1a;
-    --text-muted: #64748b;
+    --text-main: #1e293b;
+    --text-muted: #475569;
 
     /* Typography */
     --font-heading: 'Outfit', sans-serif;
     --font-body: 'Inter', sans-serif;
 
     /* Shadows & Transitions */
-    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.08);
-    --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.12);
+    --shadow-sm: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23, 42, 0.05);
+    --shadow-md: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.04);
+    --shadow-lg: 0 20px 40px -10px rgba(15, 23, 42, 0.12);
+    --shadow-glow: 0 0 25px var(--accent-glow);
     --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 
     /* Header height for spacing */
@@ -46,11 +47,41 @@ html {
 body {
     font-family: var(--font-body);
     color: var(--text-main);
-    background: var(--bg-color);
-    line-height: 1.7;
+    background-color: var(--bg-color);
+    line-height: 1.8;
     overflow-x: hidden;
     width: 100%;
 }
+
+/* ==============================================
+   NGO ORGANIC PARALLAX BACKGROUND
+   ============================================== */
+.ngo-parallax-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+    background-color: transparent;
+}
+
+.p-shape {
+    position: absolute;
+    color: var(--primary); 
+    opacity: 0.25;         
+    filter: blur(2px);     
+    transition: transform 0.1s ease-out;
+}
+
+.shape-1 { font-size: 400px; top: 10%; left: -5%; color: var(--accent); }
+.shape-2 { font-size: 600px; top: 40%; right: -10%; opacity: 0.15; }
+.shape-3 { font-size: 350px; bottom: 5%; left: 15%; color: var(--accent); opacity: 0.2; }
+.shape-4 { font-size: 250px; top: 70%; right: 20%; color: #10b981; } 
+.shape-5 { font-size: 180px; top: 5%; right: 30%; }
+
 
 h1,
 h2,
@@ -58,7 +89,8 @@ h3,
 h4 {
     font-family: var(--font-heading);
     color: var(--primary);
-    line-height: 1.2;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
 }
 
 a {
@@ -287,17 +319,21 @@ header:not(.main-header) .logo img {
 }
 
 .glass-card-v2 {
-    background: var(--surface-color);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.7));
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     padding: 3rem 2rem;
     border-radius: 24px;
-    border: 1px solid rgba(0, 0, 0, 0.03);
+    border: 1px solid var(--glass-border);
     transition: var(--transition);
+    box-shadow: var(--shadow-sm);
 }
 
 .glass-card-v2:hover {
     background: #fff;
-    transform: translateY(-10px);
+    transform: translateY(-8px);
     box-shadow: var(--shadow-lg);
+    border-color: rgba(255, 255, 255, 1);
 }
 
 /* --- 4. HERO V2 --- */
@@ -310,17 +346,25 @@ header:not(.main-header) .logo img {
     overflow: hidden;
 }
 
+@keyframes bg-pan {
+    0% { background-position: 0% 50%; transform: scale(1); }
+    100% { background-position: 100% 50%; transform: scale(1.1); }
+}
+
 .hero-bg-overlay {
     position: absolute;
-    inset: 0;
+    inset: -10%; /* Negative inset allows room for scale without cutting off edges */
     background-size: cover;
     background-position: center;
     z-index: -1;
+    animation: bg-pan 30s infinite alternate ease-in-out;
 }
 
 .display-text {
     font-size: clamp(2.5rem, 7vw, 5rem);
     font-weight: 800;
+    color: #fff;
+    text-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
 }
 
 .text-gradient {
@@ -545,6 +589,7 @@ header:not(.main-header) .logo img {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    animation: bg-pan 30s infinite alternate ease-in-out;
 }
 
 /* Dark overlay for text readability over images */
@@ -620,17 +665,21 @@ header:not(.main-header) .logo img {
 
 /* --- Glass Card (old style) --- */
 .glass-card {
-    background: var(--surface-color);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.7));
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     padding: 2.5rem 2rem;
-    border-radius: 20px;
-    border: 1px solid rgba(0, 0, 0, 0.04);
+    border-radius: 24px;
+    border: 1px solid var(--glass-border);
     transition: var(--transition);
+    box-shadow: var(--shadow-sm);
 }
 
 .glass-card:hover {
     background: #fff;
     transform: translateY(-8px);
     box-shadow: var(--shadow-lg);
+    border-color: rgba(255, 255, 255, 1);
 }
 
 /* --- Card Icon --- */
@@ -673,7 +722,7 @@ header:not(.main-header) .logo img {
 /* --- Buttons --- */
 .btn-primary {
     display: inline-block;
-    background: var(--primary);
+    background: linear-gradient(135deg, var(--accent), #f43f5e);
     color: #fff;
     padding: 0.9rem 2.2rem;
     border-radius: 50px;
@@ -684,12 +733,13 @@ header:not(.main-header) .logo img {
     transition: var(--transition);
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    box-shadow: 0 4px 15px rgba(225, 29, 72, 0.3);
 }
 
 .btn-primary:hover {
-    background: var(--accent);
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px var(--accent-glow);
+    background: linear-gradient(135deg, #f43f5e, var(--accent));
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-glow);
     color: #fff;
 }
 
@@ -709,13 +759,14 @@ header:not(.main-header) .logo img {
 .btn-secondary:hover {
     background: var(--primary);
     color: #fff;
-    transform: translateY(-2px);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.2);
 }
 
 /* Hero action buttons */
 .btn-primary-lg {
     display: inline-block;
-    background: var(--accent);
+    background: linear-gradient(135deg, var(--accent), #f43f5e);
     color: #fff;
     padding: 1rem 2.5rem;
     border-radius: 50px;
@@ -725,18 +776,19 @@ header:not(.main-header) .logo img {
     letter-spacing: 1px;
     transition: var(--transition);
     border: none;
+    box-shadow: 0 8px 20px rgba(225, 29, 72, 0.3);
 }
 
 .btn-primary-lg:hover {
-    background: #fff;
-    color: var(--accent);
-    transform: translateY(-3px);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(135deg, #f43f5e, var(--accent));
+    color: #fff;
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-glow);
 }
 
 .btn-outline-lg {
     display: inline-block;
-    border: 2px solid rgba(255, 255, 255, 0.5);
+    border: 2px solid rgba(255, 255, 255, 0.7);
     color: #fff;
     padding: 1rem 2.5rem;
     border-radius: 50px;
@@ -745,13 +797,15 @@ header:not(.main-header) .logo img {
     text-transform: uppercase;
     letter-spacing: 1px;
     transition: var(--transition);
+    backdrop-filter: blur(8px);
 }
 
 .btn-outline-lg:hover {
     background: #fff;
     color: var(--primary);
     border-color: #fff;
-    transform: translateY(-3px);
+    transform: translateY(-4px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
 }
 
 .hero-btns {
@@ -767,6 +821,7 @@ header:not(.main-header) .logo img {
     max-width: 550px;
     margin-top: 1.5rem;
     line-height: 1.8;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 .btn-link {
@@ -865,11 +920,11 @@ textarea.form-control {
 /* --- Newsletter V2 --- */
 .newsletter-v2 {
     padding: 5rem 0;
-    background: var(--surface-color);
+    background: transparent;
 }
 
 .newsletter-card {
-    background: var(--primary);
+    background: linear-gradient(135deg, var(--primary) 0%, #172554 100%);
     color: #fff;
     border-radius: 24px;
     padding: 4rem;
@@ -877,6 +932,24 @@ textarea.form-control {
     align-items: center;
     justify-content: space-between;
     gap: 3rem;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1), 0 20px 40px rgba(15, 23, 42, 0.2);
+    position: relative;
+    overflow: hidden;
+    flex-wrap: wrap;
+}
+
+.newsletter-content {
+    flex: 1 1 300px;
+}
+
+.newsletter-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(to right, var(--accent), #f43f5e);
 }
 
 .newsletter-content h2 {
@@ -891,8 +964,12 @@ textarea.form-control {
 
 .newsletter-form {
     display: flex;
+    flex-direction: column;
     gap: 0.5rem;
     flex-shrink: 0;
+    width: 100%;
+    max-width: 550px;
+    flex: 2 1 400px;
 }
 
 .newsletter-form input {
@@ -924,7 +1001,7 @@ textarea.form-control {
 
 /* --- Thematic Background --- */
 .thematic-bg {
-    background: var(--surface-color);
+    background: rgba(255, 255, 255, 0.7);
 }
 
 /* --- Sub-page Footer (old classes) --- */
@@ -1181,3 +1258,86 @@ footer:not(.premium-footer) {
         font-size: 2rem;
     }
 }
+
+/* ==============================================
+   NATURE-THEMED BACKGROUND ATTRACTIONS
+   ============================================== */
+
+/* Forest Nature Divider Transition to Footer */
+.forest-divider {
+    position: relative;
+    height: 120px;
+    background-image: url('/images/forest-divider.svg');
+    background-size: 100% 100%;
+    background-position: bottom;
+    background-repeat: no-repeat;
+    z-index: 10;
+    margin-bottom: -1px; /* Prevents visual seam line between SVG and footer */
+    pointer-events: none;
+    width: 100%;
+}
+
+/* Floating Leaf Watermark Backgrounds */
+.leaf-watermark-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.leaf-watermark {
+    position: absolute;
+    width: 250px;
+    height: 250px;
+    opacity: 0.045; /* Subtle watermark */
+    color: #1b4332; /* Forest green */
+    pointer-events: none;
+    z-index: 0;
+    transition: transform 1s ease-in-out;
+}
+
+/* Specific position modifiers for watermarks */
+.leaf-left {
+    left: -80px;
+    top: 15%;
+    transform: rotate(45deg);
+}
+
+.leaf-right {
+    right: -80px;
+    top: 55%;
+    transform: rotate(-135deg);
+}
+
+.leaf-left-bottom {
+    left: -60px;
+    bottom: 12%;
+    transform: rotate(15deg);
+}
+
+.leaf-right-top {
+    right: -70px;
+    top: 10%;
+    transform: rotate(-45deg);
+}
+
+/* Responsive Scaling */
+@media (max-width: 992px) {
+    .forest-divider {
+        height: 90px;
+    }
+    .leaf-watermark {
+        width: 180px;
+        height: 180px;
+        opacity: 0.03;
+    }
+}
+
+@media (max-width: 768px) {
+    .forest-divider {
+        height: 65px;
+    }
+    .leaf-watermark {
+        width: 130px;
+        height: 130px;
+        opacity: 0.02;
+    }
+}

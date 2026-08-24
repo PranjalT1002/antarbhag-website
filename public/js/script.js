@@ -1,4 +1,27 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // 0. Dynamic NGO Parallax Background (Organic Shapes)
+    const parallaxHTML = `
+        <div class="ngo-parallax-bg">
+            <i class="fa-solid fa-leaf p-shape shape-1"></i>
+            <i class="fa-solid fa-earth-americas p-shape shape-2"></i>
+            <i class="fa-solid fa-hands-holding-circle p-shape shape-3"></i>
+            <i class="fa-solid fa-seedling p-shape shape-4"></i>
+            <i class="fa-solid fa-dove p-shape shape-5"></i>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('afterbegin', parallaxHTML);
+
+    const shapes = document.querySelectorAll('.p-shape');
+    window.addEventListener('scroll', () => {
+        const scrolled = window.pageYOffset;
+        shapes.forEach((shape, index) => {
+            // Different speeds and directions for depth
+            const speed = (index + 1) * 0.12;
+            const direction = index % 2 === 0 ? 1 : -1;
+            shape.style.transform = `translateY(${scrolled * speed * direction}px) rotate(${scrolled * 0.05}deg)`;
+        });
+    });
+
     // 1. Mobile Navigation Toggle Logic
     const menuToggle = document.querySelector('.menu-toggle');
     const navLinks = document.querySelector('.nav-links');

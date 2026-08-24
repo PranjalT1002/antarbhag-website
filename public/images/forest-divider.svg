@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 200" preserveAspectRatio="none">
+  <defs>
+    <!-- Conifer / Pine Tree -->
+    <g id="pine">
+      <path d="M15 0 L30 35 L24 35 L36 65 L28 65 L40 100 L0 100 L12 65 L4 65 L16 35 L10 35 Z" fill="currentColor"/>
+      <rect x="13" y="100" width="4" height="20" fill="currentColor"/>
+    </g>
+    <!-- Leafy Deciduous Tree -->
+    <g id="leafy">
+      <path d="M25 10 C13 10 5 22 5 35 C5 48 15 52 18 55 C12 62 12 75 25 80 C38 75 38 62 32 55 C35 52 45 48 45 35 C45 22 37 10 25 10 Z" fill="currentColor"/>
+      <rect x="23" y="78" width="4" height="42" fill="currentColor"/>
+    </g>
+    <!-- Grass Cluster -->
+    <g id="grass">
+      <path d="M0 25 Q6 0 9 25 Q14 5 17 25 Q21 2 25 25 Q29 8 32 25" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+    </g>
+  </defs>
+
+  <!-- Layer 1: Distant Trees (Lightest green) -->
+  <g fill="#1b4332" opacity="0.12">
+    <use href="#pine" transform="translate(50, 80) scale(1.2)"/>
+    <use href="#leafy" transform="translate(180, 70) scale(1.3)"/>
+    <use href="#pine" transform="translate(320, 85) scale(1.15)"/>
+    <use href="#leafy" transform="translate(460, 60) scale(1.4)"/>
+    <use href="#pine" transform="translate(620, 80) scale(1.2)"/>
+    <use href="#leafy" transform="translate(760, 75) scale(1.25)"/>
+    <use href="#pine" transform="translate(910, 85) scale(1.15)"/>
+    <use href="#leafy" transform="translate(1040, 55) scale(1.45)"/>
+    <use href="#pine" transform="translate(1200, 80) scale(1.2)"/>
+    <use href="#leafy" transform="translate(1320, 70) scale(1.3)"/>
+  </g>
+
+  <!-- Layer 2: Mid-ground Trees (Medium green) -->
+  <g fill="#0f2b1d" opacity="0.35">
+    <use href="#leafy" transform="translate(110, 100) scale(1.0)"/>
+    <use href="#pine" transform="translate(240, 110) scale(0.9)"/>
+    <use href="#leafy" transform="translate(390, 105) scale(0.95)"/>
+    <use href="#pine" transform="translate(530, 100) scale(1.0)"/>
+    <use href="#leafy" transform="translate(690, 110) scale(0.9)"/>
+    <use href="#pine" transform="translate(830, 105) scale(0.95)"/>
+    <use href="#leafy" transform="translate(970, 100) scale(1.0)"/>
+    <use href="#pine" transform="translate(1120, 110) scale(0.9)"/>
+    <use href="#leafy" transform="translate(1260, 105) scale(0.95)"/>
+  </g>
+
+  <!-- Layer 3: Foreground (Solid black to match footer) -->
+  <g fill="#000000">
+    <!-- Ground silhouette curve -->
+    <path d="M0 170 Q200 160 400 175 T800 165 T1200 178 T1440 170 L1440 200 L0 200 Z" />
+    
+    <!-- Trees standing on the ground curve -->
+    <use href="#pine" transform="translate(15, 110) scale(0.9)"/>
+    <use href="#leafy" transform="translate(130, 95) scale(1.05)"/>
+    <use href="#pine" transform="translate(280, 108) scale(0.92)"/>
+    <use href="#leafy" transform="translate(450, 90) scale(1.1)"/>
+    <use href="#pine" transform="translate(580, 110) scale(0.9)"/>
+    <use href="#leafy" transform="translate(710, 100) scale(1.0)"/>
+    <use href="#pine" transform="translate(860, 108) scale(0.92)"/>
+    <use href="#leafy" transform="translate(1010, 90) scale(1.1)"/>
+    <use href="#pine" transform="translate(1160, 110) scale(0.9)"/>
+    <use href="#leafy" transform="translate(1290, 100) scale(1.0)"/>
+    <use href="#pine" transform="translate(1390, 108) scale(0.92)"/>
+    
+    <!-- Grass Details on the ground -->
+    <use href="#grass" transform="translate(60, 160) scale(0.7)"/>
+    <use href="#grass" transform="translate(200, 162) scale(0.8)"/>
+    <use href="#grass" transform="translate(340, 158) scale(0.9)"/>
+    <use href="#grass" transform="translate(510, 160) scale(0.75)"/>
+    <use href="#grass" transform="translate(640, 161) scale(0.85)"/>
+    <use href="#grass" transform="translate(770, 159) scale(0.95)"/>
+    <use href="#grass" transform="translate(920, 160) scale(0.75)"/>
+    <use href="#grass" transform="translate(1070, 162) scale(0.8)"/>
+    <use href="#grass" transform="translate(1220, 158) scale(0.9)"/>
+    <use href="#grass" transform="translate(1340, 161) scale(0.85)"/>
+  </g>
+</svg>
