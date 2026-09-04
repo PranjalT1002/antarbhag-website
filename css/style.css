@@ -105,18 +105,29 @@ a {
 }
 
 /* --- 1. FIXED PRELOADER & INTRO --- */
+.intro-seen #intro-video-container {
+    display: none !important;
+}
+
 #intro-video-container {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     background: #000;
     z-index: 110000;
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: opacity 1s ease;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.7s cubic-bezier(0.25, 1, 0.5, 1), visibility 0.7s ease;
+    will-change: opacity;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    contain: strict;
+    overflow: hidden;
 }
 
 #intro-video {
@@ -124,6 +135,16 @@ a {
     height: 100%;
     object-fit: cover;
     display: block;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    will-change: transform;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+}
+
+#intro-video.video-playing {
+    opacity: 1;
 }
 
 #skip-intro {
@@ -132,20 +153,31 @@ a {
     right: 40px;
     z-index: 110001;
     padding: 12px 28px;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
+    background: rgba(15, 23, 18, 0.45);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: #ffffff;
     border-radius: 50px;
     cursor: pointer;
     font-weight: 600;
     font-size: 0.9rem;
-    transition: var(--transition);
+    letter-spacing: 0.5px;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+    display: inline-flex;
+    align-items: center;
 }
 
 #skip-intro:hover {
-    background: rgba(255, 255, 255, 0.25);
-    transform: scale(1.05);
+    background: rgba(46, 125, 50, 0.65);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px) scale(1.04);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5);
+}
+
+#skip-intro:active {
+    transform: scale(0.97);
 }
 
 #preloader {

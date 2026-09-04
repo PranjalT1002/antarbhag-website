@@ -79,123 +79,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 3. Intro Video & Preloader Sequencing
+    // 3. Intro Video & Preloader Sequencing (High-Performance & Smooth)
     const introContainer = document.getElementById('intro-video-container');
     const introVideo = document.getElementById('intro-video');
     const skipBtn = document.getElementById('skip-intro');
     const preloader = document.getElementById('preloader');
     const siteHeader = document.querySelector('.main-header') || document.querySelector('header');
     
-    // Session management: use sessionStorage so intro plays once per session
+    // Session management: intro plays once per browsing session
     const hasSeenIntro = sessionStorage.getItem('antarbhag_intro_seen');
-    let introFinished = false; // Guard against double-finish
-
-    // Only lock scrolling if there's a preloader or intro
-    if (preloader || introContainer) {
-        document.body.style.overflow = 'hidden';
-    }
-
-    // Prepare the video safely
-    if (introContainer) {
-        if (!hasSeenIntro) {
-            // Make video container visible
-            introContainer.style.opacity = '1';
-            introContainer.style.visibility = 'visible';
-            introContainer.style.display = 'flex';
-            if (siteHeader) siteHeader.style.visibility = 'hidden';
-
-            if (introVideo) {
-                introVideo.pause();
-                introVideo.currentTime = 0;
-            }
-        } else {
-            // Already seen: remove immediately
-            introContainer.style.display = 'none';
-        }
-    }
-
-    const attemptPlay = () => {
-        if (!introVideo || introFinished) return;
-        
-        const playPromise = introVideo.play();
-        if (playPromise !== undefined) {
-            playPromise.then(() => {
-                console.log('Intro video playing successfully');
-            }).catch(e => {
-                console.warn('Autoplay blocked:', e);
-                // Retry once after a short delay (some browsers need user gesture detection time)
-                setTimeout(() => {
-                    if (introFinished) return;
-                    const retryPromise = introVideo.play();
-                    if (retryPromise !== undefined) {
-                        retryPromise.catch(() => {
-                            console.warn('Retry failed, skipping intro');
-                            finishIntro();
-                        });
-                    }
-                }, 500);
-            });
-        }
-    };
-
-    const startIntroVideo = () => {
-        if (introContainer && introVideo && !hasSeenIntro && !introFinished) {
-            // Ensure video is visible
-            introContainer.style.display = 'flex';
-            introContainer.style.opacity = '1';
-            
-            // Set up event handlers
-            introVideo.onended = finishIntro;
-            if (skipBtn) skipBtn.onclick = finishIntro;
-            
-            // Listen for errors on the video element
-            introVideo.onerror = (e) => {
-                console.warn('Video error:', e);
-                finishIntro();
-            };
-
-            // Check if video is already ready to play
-            if (introVideo.readyState >= 3) {
-                // HAVE_FUTURE_DATA or HAVE_ENOUGH_DATA - ready to play
-                attemptPlay();
-            } else {
-                // Wait for the video to be ready
-                introVideo.addEventListener('canplay', () => {
-                    attemptPlay();
-                }, { once: true });
-                
-                // Also try loading explicitly
-                introVideo.load();
-            }
-            
-            // Safety timeout: skip intro if video hasn't finished in 45 seconds
-            setTimeout(() => {
-                if (!introFinished) {
-                    console.warn('Intro video safety timeout reached');
-                    finishIntro();
-                }
-            }, 45000);
-        } else {
-            finishIntro();
-        }
-    };
-
-    const finishIntro = () => {
-        if (introFinished) return; // Prevent double execution
-        introFinished = true;
-        
-        if (introContainer) {
-            introContainer.style.opacity = '0';
-            sessionStorage.setItem('antarbhag_intro_seen', 'true');
-            setTimeout(() => {
-                introContainer.style.display = 'none';
-                introContainer.remove();
-                revealSite();
-            }, 800);
-        } else {
-            revealSite();
-        }
-    };
+    let introFinished = false;
 
     const revealSite = () => {
         document.body.style.overflow = '';
@@ -203,32 +96,128 @@ document.addEventListener('DOMContentLoaded', () => {
         initScrollAnimations();
     };
 
-    // The sequence starts with the preloader
-    const preloaderDelay = hasSeenIntro ? 300 : 1800;
+    const finishIntro = () => {
+        if (introFinished) return;
+        introFinished = true;
+        sessionStorage.setItem('antarbhag_intro_seen', 'true');
+        
+        if (introContainer) {
+            introContainer.style.opacity = '0';
+            introContainer.style.visibility = 'hidden';
+            revealSite();
+            setTimeout(() => {
+                if (introVideo) {
+                    try {
+                        introVideo.pause();
+                        introVideo.removeAttribute('src');
+                        introVideo.load();
+                    } catch (e) {}
+                }
+                introContainer.remove();
+            }, 700);
+        } else {
+            revealSite();
+        }
+    };
 
-    if (preloader) {
+    if (hasSeenIntro) {
+        // Already seen in this session: skip immediately
+        if (introContainer) {
+            introContainer.style.display = 'none';
+            introContainer.remove();
+        }
+        if (preloader) {
+            document.body.style.overflow = 'hidden';
+            setTimeout(() => {
+                preloader.style.opacity = '0';
+                preloader.style.visibility = 'hidden';
+                setTimeout(() => {
+                    preloader.remove();
+                    revealSite();
+                }, 350);
+            }, 150);
+        } else {
+            revealSite();
+        }
+    } else if (introContainer && introVideo) {
+        // First visit on homepage with intro video:
+        // Dismiss any background preloader immediately to avoid conflicting timers and frozen overlays
+        if (preloader) {
+            preloader.style.display = 'none';
+            preloader.remove();
+        }
+
+        document.body.style.overflow = 'hidden';
+        if (siteHeader) siteHeader.style.visibility = 'hidden';
+
+        // Connect handlers
+        if (skipBtn) skipBtn.onclick = finishIntro;
+        introVideo.onended = finishIntro;
+        introVideo.onerror = finishIntro;
+
+        // Cinematic outro: at 12.2s the content reaches conclusion before static black tail
+        introVideo.addEventListener('timeupdate', () => {
+            if (introVideo.currentTime >= 12.2) {
+                finishIntro();
+            }
+        });
+
+        // Smooth fade-in once video is actually rendering frames
+        const onFrameReady = () => {
+            introVideo.classList.add('video-playing');
+        };
+        introVideo.addEventListener('playing', onFrameReady, { once: true });
+        introVideo.addEventListener('timeupdate', () => {
+            if (introVideo.currentTime > 0.1) onFrameReady();
+        }, { once: true });
+
+        // Play without interrupting buffer or calling .load()
+        const playVideo = () => {
+            if (introFinished) return;
+            const p = introVideo.play();
+            if (p !== undefined) {
+                p.then(() => {
+                    onFrameReady();
+                }).catch(() => {
+                    // If autoplay blocked, resume on first user touch/click or timeout safely
+                    const unlock = () => {
+                        introVideo.play().then(onFrameReady).catch(finishIntro);
+                        ['click', 'touchstart', 'keydown'].forEach(evt => window.removeEventListener(evt, unlock));
+                    };
+                    ['click', 'touchstart', 'keydown'].forEach(evt => window.addEventListener(evt, unlock, { once: true }));
+                    setTimeout(() => {
+                        if (!introFinished && introVideo.paused) finishIntro();
+                    }, 2500);
+                });
+            }
+        };
+
+        if (introVideo.readyState >= 3) {
+            playVideo();
+        } else {
+            introVideo.addEventListener('canplay', playVideo, { once: true });
+            // Fallback kickstart in case canplay already fired
+            setTimeout(playVideo, 80);
+        }
+
+        // Safety fallback timeout
+        setTimeout(() => {
+            if (!introFinished) finishIntro();
+        }, 16000);
+
+    } else if (preloader) {
+        // Other subpages without intro video
+        document.body.style.overflow = 'hidden';
         setTimeout(() => {
             preloader.style.opacity = '0';
             preloader.style.visibility = 'hidden';
             setTimeout(() => {
                 preloader.remove();
-                
-                // After preloader finishes, decide what's next
-                if (introContainer && introVideo && !hasSeenIntro) {
-                    startIntroVideo();
-                } else {
-                    if (introContainer) introContainer.remove();
-                    revealSite();
-                }
-            }, 600);
-        }, preloaderDelay);
+                revealSite();
+            }, 500);
+        }, 800);
     } else {
-        if (introContainer && introVideo && !hasSeenIntro) {
-            startIntroVideo();
-        } else {
-            if (introContainer) introContainer.remove();
-            revealSite();
-        }
+        revealSite();
     }
 
     // 4. Interactive Scroll Animations (Observer API)
